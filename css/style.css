@@ -1,0 +1,53 @@
+body {
+    background-color: #c5c6a7;
+}
+
+.cover {
+    background: url("../images/cover.jpg") center no-repeat fixed;
+    background-attachment: scroll;
+    background-size: cover;
+    height: 100vh;
+}
+
+#addNewBook {
+    width: 100%;
+    height: 50px;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+#addNewBookModal {
+    background-color: rgba(0, 0, 0, 0.6)
+}
+
+#typeOfBook {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    color: white;
+}
+
+.header {
+    text-align: center;
+
+}
+
+.bookItem {
+    margin-left: 0.4px;
+    margin-right: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.9);
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    height: 70px;
+}
+
+.bookItem__cel {
+    padding: 17px 10px;
+}
+
+.hidden {
+    display: none;
+}

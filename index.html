@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Library</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="cover">
+        <div class="container-fluid">
+            <div class="header">
+                <h2>Library</h2>
+            </div>
+
+            <nav aria-label="Page navigation example" class="justify-content-center">
+                <ul class="pagination justify-content-center">
+                    <li id="previous" class="page-item">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <div id="pages" class="pagination justify-content-center">
+                    </div>
+                    <li id="next" class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="container-fluid">
+                <div class="form-inline">
+                    <div class="form-group col-2">
+                        <input type="email" class="form-control" id="searchByTitleOrAuthor" placeholder="Search by title or author">
+                    </div>
+                    <div class="form-group col-2">
+                        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Filter by period (1920-1970)">
+                    </div>
+                    <div class="form-group col-2">
+                        <button class="btn btn-primary" id="exampleInputEmail1">Show only novels</button>
+                    </div>
+                    <div class="form-group col-2">
+                        <button class="btn btn-primary" id="exampleInputEmail1">Show novels that are part of series</button>
+                    </div>
+                    <div class="form-group col-2">
+                        <button class="btn btn-primary" id="exampleInputEmail1">Show novels that are part of series</button>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="navbar navbar-light bg-faded">
+                <div class="row">
+                    <div>#ID</div>
+                    <div class="col-1">#Title</div>
+                    <div class="col-1">#Author</div>
+                    <div class="col-1">#Publish</div>
+                    <div class="col-1">#Length</div>
+                    <div class="col-1">#Additional info</div>
+                    <div class="col-1">#ISBN</div>
+                    <div class="col-4">#Review</div>
+                </div>
+            </nav>
+
+            <div class="booksContainer">
+
+            </div>
+        </div>
+    </div>
+
+    <button id="addNewBook" class="fixed-bottom" data-toggle="modal" data-target="#addNewBookModal">Add new book</button>
+
+    <!-- Add new book Modal-->
+    <div class="modal fade" id="addNewBookModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add new book</h5>
+                    <select id="typeOfBook">
+                        <option value="none">Select type of book</option>
+                        <option value="anthology">Anthology</option>
+                        <option value="novel">Novel</option>
+                    </select>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+                <div class="modal-body">
+
+                    <h3 id="info">Please choose what type of book do you want to add</h3>
+                    <div id="novelEntry" class="hidden">
+                        <div class="form-group row">
+                            <label for="novelTitle" class="col-4 col-form-label">Title of the novel: </label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="novelTitle">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelAuthor" class="col-4 col-form-label">Author of the novel:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="novelAuthor">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelPublisher" class="col-4 col-form-label">Publisher:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="novelPublisher">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelPublication" class="col-4 col-form-label">Novel publication:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="number" value="1900" id="novelPublication">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelPages" class="col-4 col-form-label">Pages of the novel:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="number" id="novelPages" placeholder="1-1000">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelSeriesName" class="col-4 col-form-label">Name of the series:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="novelSeriesName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelSeriesNumber" class="col-4 col-form-label">Number of the serie:</label>
+                            <div class="col-8">
+                                <input disabled class="form-control" type="text" id="novelSeriesNumber">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelIsbn" class="col-4 col-form-label">ISBN:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="novelIsbn">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="novelReview" class="col-4 col-form-label">Review: </label>
+                            <div class="col-8">
+                                <textarea id="novelReview" rows="7" cols="60"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="anthologyEntry" class="hidden">
+                        <div class="form-group row">
+                            <label for="anthologyTitle" class="col-4 col-form-label">Title of the anthology: </label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="anthologyTitle">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyEditor" class="col-4 col-form-label">Editor of the anthology:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="anthologyEditor">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyPublisher" class="col-4 col-form-label">Publisher:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="anthologyPublisher">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyPublication" class="col-4 col-form-label">Novel publication:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="number" value="1900" id="anthologyPublication">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyPages" class="col-4 col-form-label">Pages:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="number" id="anthologyPages" placeholder="1-1000">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyStories" class="col-4 col-form-label">Stories:</label>
+                            <div class="col-8">
+                                <span id="anthologyStories"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="storyTitle" class="col-1 col-form-label">Title:</label>
+                            <input class="form-control col-2" type="text" id="storyTitle" />
+                            <label for="storyAuthor" class="col-1 col-form-label">Author:</label>
+                            <input class="form-control col-2" type="text" id="storyAuthor" />
+                            <label for="storyTitle" class="col-1 col-form-label">Original:</label>
+                            <select class="form-control col-2" id="isOriginal">
+                                <option value="none">Choose</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                            <button class="btn btn-success col-3" id="addStory">Add story</button>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyIsbn" class="col-4 col-form-label">ISBN:</label>
+                            <div class="col-8">
+                                <input class="form-control" type="text" id="anthologyIsbn">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="anthologyReview" class="col-4 col-form-label">Review: </label>
+                            <div class="col-8">
+                                <textarea id="anthologyReview" rows="7" cols="60"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveBook">Save book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
+    <script src="js/story.js"></script>
+    <script src="js/novel.js"></script>
+    <script src="js/anthology.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
