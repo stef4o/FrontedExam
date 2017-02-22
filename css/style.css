@@ -1,5 +1,6 @@
 body {
     background-color: #c5c6a7;
+    min-width: 1300px;
 }
 
 .cover {
@@ -29,7 +30,6 @@ body {
 
 .header {
     text-align: center;
-
 }
 
 .bookItem {
@@ -50,4 +50,12 @@ body {
 
 .hidden {
     display: none;
+}
+
+.filterOptions {
+    margin: 20px 0;
+}
+
+.filterOptions .form-group {
+    margin: 2px 0;
 }
