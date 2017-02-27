@@ -5,9 +5,10 @@ body {
 
 .cover {
     background: url("../images/cover.jpg") center no-repeat fixed;
-    background-attachment: scroll;
+    background-attachment: fixed;
     background-size: cover;
-    height: 100vh;
+    height: auto;
+    min-height: 100vh;
 }
 
 #addNewBook {

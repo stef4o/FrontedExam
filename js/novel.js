@@ -1,13 +1,7 @@
-function Novel(id, title, author, publisher, yearOfPublication, length, series, seriesNumber, ISBN, review) {
-    this.kind = "novel";
-    this.id = id;
-    this.title = title;
-    this.author = author;
-    this.publisher = publisher;
-    this.yearOfPublication = yearOfPublication;
-    this.length = length;
-    this.series = series;
-    this.seriesNumber = seriesNumber;
-    this.ISBN = ISBN;
-    this.review = review;
+class Novel extends Book {
+    constructor(id, title, author, publisher, year, length, series, seriesNumber, ISBN, review) {
+        super(id, "novel", title, author, publisher, year, length, ISBN, review)
+        this.series = series;
+        this.seriesNumber = seriesNumber;
+    }
 }

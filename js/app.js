@@ -2,6 +2,7 @@ let container = $(".booksContainer");
 let pageSize = 10;
 let pageNumber = 1;
 let tempArray = [];
+let sortAscending = false;
 
 let addNewBookToDisplay = (book) => {
     container.append(`
@@ -38,7 +39,7 @@ let setPagination = (length) => {
     pages.find("li").on('click', function() {
         pageNumber = $(pages).find("li").index($(this)) + 1;
         setPage(pageNumber);
-        displayPage(pageNumber, pageSize, getBooksFromDB(), container);
+        displayPage(pageNumber, pageSize, tempArray.length == 0 ? getBooksFromDB() : tempArray, container);
     })
 }
 
@@ -97,20 +98,14 @@ let getAnthologyAddInfo = function(book) {
     let authors = 1,
         orgStories = 0;
     let _stories = book.stories;
-    _stories.sort((a, b) => sortFunc(a["author"], b["author"]));
-    for (i = 1; i < _stories.length; ++i) {
-        if (_stories[i].author != _stories[i - 1].author) authors += 1;
-        if (_stories[i].original) orgStories += 1;
-    }
-    message = `${_stories.length} ${_stories.length % 10 == 1? "story" : "stories"} by ${authors} ${_stories.length == 1 ? "author" : "authors"}`;
+    _stories.sort((a, b) => asc(a["author"], b["author"]));
+    for (i = 1; i < _stories.length; ++i) { if (_stories[i].author != _stories[i - 1].author) authors += 1; }
+    for (i = 0; i < _stories.length; ++i) { if (_stories[i].original === true) orgStories += 1; }
+    message = `${_stories.length} ${_stories.length % 10 == 1 && _stories.length != 11 ? 
+                    "story" : "stories"} by ${authors} ${_stories.length == 1 ? "author" : "authors"}`;
     message += `\n${orgStories} original ${orgStories == 1? "story" : "stories"}`
     return message;
 }
-
-let sortFunc = (a, b) => {
-    return a < b ? 1 : (a > b ? -1 : 0);
-}
-
 
 let handleDeleteButton = (id) => {
     $(`.bookItem__delete${id}`).on('click', () => {
@@ -122,14 +117,14 @@ let handleDeleteButton = (id) => {
             }
         }
         localStorage.books = JSON.stringify(books);
-        refreshDisplay();
+        refreshDisplay(books);
     })
 }
 
-let refreshDisplay = () => {
-    setPagination(getMaxPageNumber(getBooksFromDB().length));
+let refreshDisplay = (books) => {
+    setPagination(getMaxPageNumber(books.length));
     setPage(pageNumber);
-    displayPage(pageNumber, pageSize, getBooksFromDB(), container);
+    displayPage(pageNumber, pageSize, books, container);
 }
 
 let updateDatabase = (book) => {
@@ -174,22 +169,55 @@ let validAnthologyInput = () => {
     return (message.length == 0);
 }
 
+let resetInputs = function() {
+    tempArray = [];
+    for (let i = 0; i < arguments.length; ++i) arguments[i].val("");
+}
+
+let filterBooks = function(fn, books) {
+    tempArray = books.filter((book) => fn(book));
+    pageNumber = 1;
+    refreshDisplay(tempArray);
+}
+
+let handleSorts = function(books, property) {
+    sortAscending = !sortAscending;
+    tempArray = sortBooks(books, property);
+    refreshDisplay(tempArray);
+}
+
+let sortBooks = (books, property) => {
+    return [].concat(books.sort((a, b) => sortOrder()(a[property], b[property])));
+}
+
+let sortOrder = () => {
+    return sortAscending ? asc : desc;
+}
+
+function asc(a, b) {
+    return a < b ? 1 : (a > b ? -1 : 0);
+}
+
+function desc(a, b) {
+    return a > b ? 1 : (a < b ? -1 : 0)
+}
+
 $(() => {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    refreshDisplay();
+    refreshDisplay(getBooksFromDB());
 
     $("#previous").on('click', function() {
         if (pageNumber > 1)
             setPage(--pageNumber);
-        displayPage(pageNumber, pageSize, getBooksFromDB(), container);
+        refreshDisplay(tempArray.length == 0 ? getBooksFromDB() : tempArray);
     })
 
     $("#next").on('click', function() {
         if (pageNumber < getMaxPageNumber(getBooksFromDB().length))
             setPage(++pageNumber);
-        displayPage(pageNumber, pageSize, getBooksFromDB(), container);
+        refreshDisplay(tempArray.length == 0 ? getBooksFromDB() : tempArray);
     })
 
     $("#saveBook").on('click', () => {
@@ -199,11 +227,11 @@ $(() => {
                 let title = $("#novelTitle").val();
                 let author = $("#novelAuthor").val();
                 let publisher = $("#novelPublisher").val();
-                let publication = $("#novelPublication").val();
+                let publication = Number($("#novelPublication").val());
                 let pages = Number($("#novelPages").val());
                 let series = $("#novelSeriesName").val();
                 let seriesNumber = Number($("#novelSeriesNumber").val());
-                let ISBN = $("#novelIsbn").val();
+                let ISBN = Number($("#novelIsbn").val());
                 let review = $("#novelReview").val();
                 let book = new Novel(id, title, author, publisher, publication, pages, series, seriesNumber, ISBN, review);
                 updateDatabase(book);
@@ -213,13 +241,12 @@ $(() => {
             if (validAnthologyInput()) {
                 let id = getBooksFromDB().length + 1;
                 let title = $("#anthologyTitle").val();
-                let author = $("#anthologyAuthor").val();
+                let author = $("#anthologyEditor").val();
                 let publisher = $("#anthologyPublisher").val();
-                let publication = $("#anthologyPublication").val();
+                let publication = Number($("#anthologyPublication").val());
                 let pages = Number($("#anthologyPages").val());
                 let stories = getStories();
-                //let seriesNumber = Number($("#novelSeriesNumber").val());
-                let ISBN = $("#anthologyIsbn").val();
+                let ISBN = Number($("#anthologyIsbn").val());
                 let review = $("#anthologyReview").val();
                 let book = new Anthology(id, title, author, publisher, publication, pages, stories, ISBN, review);
                 delete sessionStorage.stories;
@@ -227,7 +254,7 @@ $(() => {
                 addNewBookToDisplay(book);
             }
         }
-        refreshDisplay();
+        refreshDisplay(getBooksFromDB());
 
     });
 
@@ -241,7 +268,6 @@ $(() => {
 
     $("#typeOfBook").on('change', () => {
         let type = $("#typeOfBook").val();
-        console.log(type);
         if (type == "none") {
             $("#novelEntry").addClass("hidden");
             $("#anthologyEntry").addClass("hidden");
@@ -269,13 +295,93 @@ $(() => {
         $("#isOriginal").val("none");
     })
 
-    /*$.ajax("library.json", {
-        complete: (data) => {
-            let result = data.responseJSON;
-            result.forEach((b) => {
-                updateDatabase(b);
-            });
-            /*setPagination(getMaxPageNumber(getMovies().length));
-            setPage(pageNumber);
-            displayPage(pageNumber, getPageSize(), getMovies(), moviesContainer);*/
+    $("#searchByTitleOrAuthor").keyup(() => {
+        resetInputs($("#filterPeriod"), $("#searchNovelsByUser"));
+        if (!!$("#searchByTitleOrAuthor").val()) {
+            filterBooks((book) => {
+                let phrase = $("#searchByTitleOrAuthor").val().toLowerCase();
+                if (book.title.toLowerCase().indexOf(phrase) != -1) return true;
+                if (book.author.toLowerCase().indexOf(phrase) != -1) return true;
+                if (book.kind == "anthology") {
+                    for (let i = 0; i < book.stories.length; ++i)
+                        if (book.stories[i].author.toLowerCase().indexOf(phrase) != -1) return true;
+                }
+            }, getBooksFromDB());
+        } else {
+            tempArray = [];
+            refreshDisplay(getBooksFromDB());
+        }
+    });
+
+    $("#filterPeriod").keyup(() => {
+        resetInputs($("#searchByTitleOrAuthor"), $("#searchNovelsByUser"));
+        if (!!$("#filterPeriod").val()) {
+            filterBooks((book) => {
+                let year = $("#filterPeriod").val();
+                if (Number(book.yearOfPublication) >= year) return true;
+            }, getBooksFromDB());
+        } else {
+            tempArray = [];
+            refreshDisplay(getBooksFromDB());
+        }
+    });
+
+    $("#searchNovelsByUser").keyup(() => {
+        resetInputs($("#filterPeriod"), $("#searchByTitleOrAuthor"));
+        if (!!$("#searchNovelsByUser").val()) {
+            filterBooks((book) => {
+                let phrase = $("#searchNovelsByUser").val().toLowerCase();
+                if (book.kind == "novel")
+                    if (book.series.toLowerCase().indexOf(phrase) != -1) return true;
+            }, getBooksFromDB());
+        } else {
+            tempArray = [];
+            refreshDisplay(getBooksFromDB());
+        }
+    });
+
+    $("#showNovels").on('click', () => {
+        resetInputs($("#filterPeriod"), $("#searchByTitleOrAuthor"), $("#searchNovelsByUser"));
+        filterBooks((book) => {
+            if (book.kind == "novel") return true;
+        }, getBooksFromDB());
+    });
+
+    $("#showNovelsPartOfSeries").on('click', () => {
+        resetInputs($("#filterPeriod"), $("#searchByTitleOrAuthor"), $("#searchNovelsByUser"));
+        filterBooks((book) => {
+            if (book.kind == "novel" && !!book.series) return true;
+        }, getBooksFromDB());
+    });
+
+    $("#showAnthologies").on('click', () => {
+        resetInputs($("#filterPeriod"), $("#searchByTitleOrAuthor"), $("#searchNovelsByUser"));
+        filterBooks((book) => {
+            if (book.kind == "anthology") return true;
+        }, getBooksFromDB());
+    });
+
+    $("#showAnthologiesWithOriginalStories").on('click', () => {
+        resetInputs($("#filterPeriod"), $("#searchByTitleOrAuthor"), $("#searchNovelsByUser"));
+        filterBooks((book) => {
+            if (book.kind == "anthology") {
+                for (let i = 0; i < book.stories.length; ++i) {
+                    if (book.stories[i].original == true) return true;
+                }
+            }
+        }, getBooksFromDB());
+    });
+
+    $(".headerProperty").on('click', function() {
+        handleSorts(tempArray == 0 ? getBooksFromDB() : tempArray, $(this).attr('id'));
+    })
+
+    $(window).scroll(function(event) {
+        let st = $(this).scrollTop();
+        if (st > 10) {
+            $("#addNewBook").fadeOut();
+        } else {
+            $("#addNewBook").fadeIn();
+        }
+    });
 })
